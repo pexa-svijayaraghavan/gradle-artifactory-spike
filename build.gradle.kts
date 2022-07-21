@@ -11,12 +11,12 @@ allprojects {
     }
     apply(plugin="com.jfrog.artifactory")
     artifactory {
-        setContextUrl(project.findProperty("artifactory_contextUrl"))
+        setContextUrl("https://srisudarsan.jfrog.io/artifactory")
         publish(delegateClosureOf<org.jfrog.gradle.plugin.artifactory.dsl.PublisherConfig> {
             repository(delegateClosureOf<groovy.lang.GroovyObject> {
                 setProperty("repoKey", "sample-repo-gradle-dev-local")
-                setProperty("username", project.findProperty("artifactory_user") ?: "nouser")
-                setProperty("password", project.findProperty("artifactory_password") ?: "nopass")
+                setProperty("username", System.getenv("artifactory_user") ?: "nouser")
+                setProperty("password", System.getenv("artifactory_password") ?: "nopass")
                 setProperty("maven", true)
             })
             defaults(delegateClosureOf<groovy.lang.GroovyObject> {
