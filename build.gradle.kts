@@ -24,7 +24,7 @@ allprojects {
             })
         })
         resolve(delegateClosureOf<org.jfrog.gradle.plugin.artifactory.dsl.ResolverConfig> {
-            setProperty("repoKey", "ample-repo-gradle-dev")
+            setProperty("repoKey", "sample-repo-gradle-dev")
         })
     }
 dependencies {
