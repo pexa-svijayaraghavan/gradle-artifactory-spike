@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  build-snapshot:
     runs-on: ubuntu-latest
 
     steps:
@@ -30,3 +30,27 @@ jobs:
         env:
           artifactory_user: ${{ secrets.ARTIFACTORY_USER }}
           artifactory_password: ${{ secrets.ARTIFACTORY_PASSWORD }}
+          build_number: ${{ github.run_id }}
+  build-release:
+    environment: release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'corretto'
+          java-version: '11'
+
+      - name: Build
+        run: ./gradlew build
+
+      - name: Publish to artifactory
+        run: ./gradlew artifactoryPublish -DisRelease=true
+        env:
+          artifactory_user: ${{ secrets.ARTIFACTORY_USER }}
+          artifactory_password: ${{ secrets.ARTIFACTORY_PASSWORD }}
+          build_number: ${{ github.run_id }}
