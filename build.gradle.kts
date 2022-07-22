@@ -11,12 +11,14 @@ allprojects {
     }
     apply(plugin="com.jfrog.artifactory")
     artifactory {
+        val isRelease = isReleaseBuild()
+        val repoName = if(isRelease) "sample-repo-gradle-release-local" else "sample-repo-gradle-dev-local"
         setContextUrl("https://srisudarsan.jfrog.io/artifactory")
         publish(delegateClosureOf<org.jfrog.gradle.plugin.artifactory.dsl.PublisherConfig> {
             repository(delegateClosureOf<groovy.lang.GroovyObject> {
-                setProperty("repoKey", "sample-repo-gradle-dev-local")
-                setProperty("username", System.getenv("artifactory_user") ?: "nouser")
-                setProperty("password", System.getenv("artifactory_password") ?: "nopass")
+                setProperty("repoKey", repoName)
+                setProperty("username", System.getenv("artifactory_user"))
+                setProperty("password", System.getenv("artifactory_password"))
                 setProperty("maven", true)
             })
             defaults(delegateClosureOf<groovy.lang.GroovyObject> {
@@ -24,23 +26,16 @@ allprojects {
             })
         })
         resolve(delegateClosureOf<org.jfrog.gradle.plugin.artifactory.dsl.ResolverConfig> {
-            setProperty("repoKey", "sample-repo-gradle-dev")
+            setProperty("repoKey", repoName)
         })
+        clientConfig.info.buildNumber = System.getenv("build_number")
+        clientConfig.info.buildName = "sample-build"
     }
 dependencies {
-    // Align versions of all Kotlin components
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
-
-    // Use the Kotlin JDK 8 standard library.
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-
-    // This dependency is used by the application.
     implementation("com.google.guava:guava:30.1.1-jre")
-
-    // Use the Kotlin test library.
     testImplementation("org.jetbrains.kotlin:kotlin-test")
-
-    // Use the Kotlin JUnit integration.
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
 }
 publishing {
@@ -50,6 +45,15 @@ publishing {
         }
     }
 }
+fun isReleaseBuild(): Boolean{
+   return  System.getProperty("isRelease") == "true"
+}
+
+fun getVersionBasedOnBuild(): String {
+    val isRelease = isReleaseBuild()
+    val artifactVersion = "0.0.1"
+    return if (isRelease) artifactVersion else "${artifactVersion}-SNAPSHOT"
+}
 
 tasks.withType<Jar> {
     manifest {
@@ -57,5 +61,11 @@ tasks.withType<Jar> {
     }
 }
 
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+    kotlinOptions {
+        jvmTarget = "11"
+    }
+}
+
 group =  "sri.spike"
-version = "0.0.1"
+version = getVersionBasedOnBuild()
