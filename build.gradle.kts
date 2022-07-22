@@ -51,7 +51,7 @@ fun isReleaseBuild(): Boolean{
 
 fun getVersionBasedOnBuild(): String {
     val isRelease = isReleaseBuild()
-    val artifactVersion = "0.0.1"
+    val artifactVersion = "0.0.2"
     return if (isRelease) artifactVersion else "${artifactVersion}-SNAPSHOT"
 }
 
