@@ -32,6 +32,8 @@ jobs:
           artifactory_password: ${{ secrets.ARTIFACTORY_PASSWORD }}
           build_number: ${{ github.run_id }}
   build-release:
+    needs:
+      - build-snapshot
     environment: release
     runs-on: ubuntu-latest
 
