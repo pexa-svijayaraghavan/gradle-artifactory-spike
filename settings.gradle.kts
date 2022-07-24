@@ -1,1 +1,1 @@
-rootProject.name = "gradle-artifactory-spike"
+rootProject.name = "gradle-artifactory-with-github-spike"

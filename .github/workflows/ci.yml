@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "*" ]
   pull_request:
     branches: [ "main" ]
 
@@ -22,37 +22,50 @@ jobs:
           distribution: 'corretto'
           java-version: '11'
 
-      - name: Build and Test
-        run: ./gradlew build
+      - name: Test
+        run: ./gradlew test
 
-      - name: Publish to artifactory
-        run: ./gradlew artifactoryPublish
+      - name: Upload to artifactory
+        uses: jfrog/setup-jfrog-cli@v2
+        run: |
+            # Configure jfrog cli
+            jf c add --url https://srisudarsan.jfrog.io --user $artifactory_user --password $artifactory_password
+            # Configure gradle
+            jf gradlec --repo-deploy github-ci-jfrog --use-wrapper
+            # Build
+            jf gradle clean build
+            # Generate build info
+            jf rt bce github-ci-build ${build_number}
+            # Upload to artifactory
+            jf rt bp github-ci-build ${build_number}
         env:
           artifactory_user: ${{ secrets.ARTIFACTORY_USER }}
           artifactory_password: ${{ secrets.ARTIFACTORY_PASSWORD }}
           build_number: ${{ github.run_id }}
-  build-release:
-    needs:
-      - build-snapshot
-    environment: release
-    runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
-
-      - name: Setup Java
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'corretto'
-          java-version: '11'
-
-      - name: Build
-        run: ./gradlew build
-
-      - name: Publish to artifactory
-        run: ./gradlew artifactoryPublish -DisRelease=true
-        env:
-          artifactory_user: ${{ secrets.ARTIFACTORY_USER }}
-          artifactory_password: ${{ secrets.ARTIFACTORY_PASSWORD }}
-          build_number: ${{ github.run_id }}
+      
+#  build-release:
+#    needs:
+#      - build-snapshot
+#    environment: release
+#    runs-on: ubuntu-latest
+#
+#    steps:
+#      - name: Checkout repo
+#        uses: actions/checkout@v3
+#
+#      - name: Setup Java
+#        uses: actions/setup-java@v3
+#        with:
+#          distribution: 'corretto'
+#          java-version: '11'
+#
+#      - name: Build
+#        run: ./gradlew build
+#
+#      - name: Publish to artifactory
+#        run: ./gradlew artifactoryPublish -DisRelease=true
+#        env:
+#          artifactory_user: ${{ secrets.ARTIFACTORY_USER }}
+#          artifactory_password: ${{ secrets.ARTIFACTORY_PASSWORD }}
+#          build_number: ${{ github.run_id }}
