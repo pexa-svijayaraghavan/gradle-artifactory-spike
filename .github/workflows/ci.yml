@@ -32,8 +32,6 @@ jobs:
 
       - name: Upload artifacts
         run: |
-            # Configure jfrog cli
-            jf c add --url https://srisudarsan.jfrog.io --user $artifactory_user --password $artifactory_password
             # Configure gradle
             jf gradlec --repo-deploy github-ci-jfrog --use-wrapper
             # Build
