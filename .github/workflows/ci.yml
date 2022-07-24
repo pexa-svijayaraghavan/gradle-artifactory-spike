@@ -27,6 +27,8 @@ jobs:
 
       - name: Setup jfrog cli
         uses: jfrog/setup-jfrog-cli@v2
+        env:
+          JF_ENV_1: ${{ secrets.ARTIFACTORY_ENV }}
 
       - name: Upload artifacts
         run: |
