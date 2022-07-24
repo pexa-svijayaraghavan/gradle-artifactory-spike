@@ -34,11 +34,9 @@ jobs:
         run: |
             # Configure gradle
             jf gradlec --repo-deploy github-ci-jfrog --use-wrapper
-            # Build
-            jf gradle clean build
-            # Generate build info
-            jf rt bce github-ci-build ${build_number}
-            # Upload to artifactory
+            # Upload artifacts to artifactory
+            jf gradle clean artifactoryPublish --build-name github-ci-build --build-number ${build_number}
+            # Upload build-info to artifactory
             jf rt bp github-ci-build ${build_number}
         env:
           artifactory_user: ${{ secrets.ARTIFACTORY_USER }}
