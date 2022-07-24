@@ -25,8 +25,10 @@ jobs:
       - name: Test
         run: ./gradlew test
 
-      - name: Upload to artifactory
+      - name: Setup jfrog cli
         uses: jfrog/setup-jfrog-cli@v2
+
+      - name: Upload artifacts
         run: |
             # Configure jfrog cli
             jf c add --url https://srisudarsan.jfrog.io --user $artifactory_user --password $artifactory_password
@@ -43,7 +45,7 @@ jobs:
           artifactory_password: ${{ secrets.ARTIFACTORY_PASSWORD }}
           build_number: ${{ github.run_id }}
 
-      
+
 #  build-release:
 #    needs:
 #      - build-snapshot
