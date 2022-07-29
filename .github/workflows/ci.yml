@@ -33,7 +33,7 @@ jobs:
       - name: Upload artifacts
         run: |
             # Configure gradle
-            jf gradlec --repo-deploy github-ci-jfrog --use-wrapper
+            # jf gradlec --repo-deploy github-ci-jfrog --use-wrapper
             # Upload artifacts to artifactory
             jf gradle clean artifactoryPublish --build-name github-ci-build --build-number ${build_number}
             # Upload build-info to artifactory

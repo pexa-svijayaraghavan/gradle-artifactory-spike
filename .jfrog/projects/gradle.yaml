@@ -1,0 +1,10 @@
+version: 1
+type: gradle
+deployer:
+  repo: github-ci-jfrog
+  serverId: Default-Server
+  deployMavenDescriptors: true
+  deployIvyDescriptors: true
+  ivyPattern: '[organization]/[module]/ivy-[revision].xml'
+  artifactPattern: '[orgPath]/[module]/[baseRev](-[folderItegRev])/[module]-[baseRev](-[fileItegRev])(-[classifier]).[ext]'
+useWrapper: true
